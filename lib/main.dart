@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'TODO app',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -57,6 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    //Initialize Floor database
     $FloorDatabaseApp
         .databaseBuilder('todo_database.db')
         .build()
@@ -73,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<List<int>> addTodos(DatabaseApp db) async {
+    //Dummy data
     Todo todo1 = Todo(null, "Do homework for today");
     Todo todo2 = Todo(null, "Buy groceries");
     Todo todo3 = Todo(null, "Make food");
@@ -87,7 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> addTodo(Todo todo) async {
     await database.todoDAO.insertTodo(todo);
-    //TODO update list
   }
 
   TextEditingController todoController = TextEditingController();
@@ -111,8 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                          title: Text('About the TODO app'),
-                          content: Text(
+                          title: const Text('About the TODO app'),
+                          content: const Text(
                               'It is a simple TODO app. \nUse the + button to add a TODO\nSwipe left to delete a TODO\nDeveloped by: Nicolaj Aalykke Hansen (nicol20)'),
                           actions: <Widget>[
                             TextButton(
@@ -133,16 +134,16 @@ class _MyHomePageState extends State<MyHomePage> {
             return ListView.builder(
               itemCount: snapshot.data?.length,
               itemBuilder: (BuildContext context, int index) {
-                return Dismissible(
+                return Dismissible( //Dismissible allows for easy deletion again by swiping
                   direction: DismissDirection.endToStart,
-                  background: Container(
+                  background: Container( //When swiping starts
                     color: Colors.red,
                     alignment: Alignment.centerRight,
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Icon(Icons.delete_forever),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: const Icon(Icons.delete_forever),
                   ),
                   key: ValueKey<int>(snapshot.data![index].id!),
-                  onDismissed: (DismissDirection direction) async {
+                  onDismissed: (DismissDirection direction) async { //When swiped
                     await database.todoDAO.delete(snapshot.data![index].id!);
                     setState(() {
                       snapshot.data!.remove(snapshot.data![index]);
@@ -150,25 +151,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   child: Card(
                       child: ListTile(
-                    contentPadding: EdgeInsets.all(8.0),
+                    contentPadding: const EdgeInsets.all(8.0),
                     title: Text(snapshot.data![index].name),
                   )),
                 );
               },
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
+          showDialog( //Create dialog
             context: context,
             builder: (_) => AlertDialog(
-              title: Text('Add TODO'),
+              title: const Text('Add TODO'),
               content: TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Enter your TODO',
                 ),
                 controller: todoController,
@@ -176,13 +177,25 @@ class _MyHomePageState extends State<MyHomePage> {
               actions: <Widget>[
                 TextButton(
                     onPressed: (() {
-                      setState(() {
-                        addTodo(Todo(null, todoController.text));
-                      });
-                      todoController.clear();
-                      Navigator.of(context).pop();
+                      todoController.clear(); //Clear the text
+                      Navigator.of(context).pop(); //Remove the dialog
                     }),
-                    child: const Text("Save"))
+                    child: const Text("Cancel")),
+                TextButton(
+                    onPressed: (() {
+                      if (todoController.text.isEmpty) {
+                        return; //Ensure no empty TODOs are added
+                      }
+                      setState(() {
+                        addTodo(Todo(
+                            null,
+                            todoController
+                                .text)); //id is null as ID will be given automatically
+                      });
+                      todoController.clear(); //Clear the text
+                      Navigator.of(context).pop(); //Remove the dialog
+                    }),
+                    child: const Text("Save")),
               ],
             ),
           );
