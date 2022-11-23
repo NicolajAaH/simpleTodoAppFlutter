@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:todo_app/todo_database.dart';
 import 'package:todo_app/entity/todo.dart';
 
@@ -51,6 +52,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late DatabaseApp database;
+  late String textForTodo;
 
   @override
   void initState() {
@@ -83,6 +85,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return await database.todoDAO.findAllTodos();
   }
 
+  Future<void> addTodo(Todo todo) async {
+    await database.todoDAO.insertTodo(todo);
+    //TODO update list
+  }
+
+  TextEditingController todoController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -96,6 +105,26 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                          title: Text('About the TODO app'),
+                          content: Text(
+                              'It is a simple TODO app. \nUse the + button to add a TODO\nSwipe left to delete a TODO\nDeveloped by: Nicolaj Aalykke Hansen (nicol20)'),
+                          actions: <Widget>[
+                            TextButton(
+                                onPressed: (() {
+                                  Navigator.of(context).pop();
+                                }),
+                                child: const Text("Close"))
+                          ],
+                        ));
+              },
+              icon: const Icon(Icons.help))
+        ],
       ),
       body: FutureBuilder(
         future: getAllTodos(),
@@ -133,10 +162,34 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: null,
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: Text('Add TODO'),
+              content: TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Enter your TODO',
+                ),
+                controller: todoController,
+              ),
+              actions: <Widget>[
+                TextButton(
+                    onPressed: (() {
+                      setState(() {
+                        addTodo(Todo(null, todoController.text));
+                      });
+                      todoController.clear();
+                      Navigator.of(context).pop();
+                    }),
+                    child: const Text("Save"))
+              ],
+            ),
+          );
+        },
         tooltip: 'Add TODO',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
