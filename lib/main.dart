@@ -14,11 +14,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TODO app',
-      theme: ThemeData( //Theme of the application
+      title: 'ToDo app',
+      theme: ThemeData(
+        //Theme of the application
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Simple TODO app'),
+      home: const MyHomePage(title: 'Simple ToDo app'),
     );
   }
 }
@@ -55,7 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
       database = value;
       List<Todo> list = await database.todoDAO.findAllTodos();
 
-      if (list.isEmpty) { //Only add data if database is empty
+      if (list.isEmpty) {
+        //Only add data if database is empty
         await addTodos(database);
       }
 
@@ -68,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Todo todo1 = Todo(null, "Do homework for today");
     Todo todo2 = Todo(null, "Buy groceries");
     Todo todo3 = Todo(null, "Make food");
-    Todo todo4 = Todo(null, "Do exercise for mobile");
+    Todo todo4 = Todo(null, "Do exercises for mobile");
 
     return await db.todoDAO.insertTodos([todo1, todo2, todo3, todo4]);
   }
@@ -102,9 +104,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
-                          title: const Text('About the TODO app'),
+                          title: const Text('About the ToDo app'),
                           content: const Text(
-                              'It is a simple TODO app. \nUse the + button to add a TODO\nSwipe left to delete a TODO\nDeveloped by: Nicolaj Aalykke Hansen (nicol20)'),
+                              'It is a simple ToDo app. \nUse the + button to add a ToDo\nSwipe left to delete a ToDo\nDeveloped by: Nicolaj Aalykke Hansen (nicol20)'),
                           actions: <Widget>[
                             TextButton(
                                 onPressed: (() {
@@ -124,16 +126,19 @@ class _MyHomePageState extends State<MyHomePage> {
             return ListView.builder(
               itemCount: snapshot.data?.length,
               itemBuilder: (BuildContext context, int index) {
-                return Dismissible( //Dismissible allows for easy deletion again by swiping
+                return Dismissible(
+                  //Dismissible allows for easy deletion again by swiping
                   direction: DismissDirection.endToStart,
-                  background: Container( //When swiping starts
+                  background: Container(
+                    //When swiping starts
                     color: Colors.red,
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: const Icon(Icons.delete_forever),
                   ),
                   key: ValueKey<int>(snapshot.data![index].id!),
-                  onDismissed: (DismissDirection direction) async { //When swiped
+                  onDismissed: (DismissDirection direction) async {
+                    //When swiped
                     await database.todoDAO.delete(snapshot.data![index].id!);
                     setState(() {
                       snapshot.data!.remove(snapshot.data![index]);
@@ -154,13 +159,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog( //Create dialog
+          showDialog(
+            //Create dialog
             context: context,
             builder: (_) => AlertDialog(
-              title: const Text('Add TODO'),
+              title: const Text('Add ToDo'),
               content: TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'Enter your TODO',
+                  labelText: 'Enter your ToDo',
                 ),
                 controller: todoController,
               ),
@@ -179,8 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       setState(() {
                         addTodo(Todo(
                             null, //id is null as ID will be given automatically
-                            todoController
-                                .text)); 
+                            todoController.text));
                       });
                       todoController.clear(); //Clear the text
                       Navigator.of(context).pop(); //Remove the dialog
@@ -190,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         },
-        tooltip: 'Add TODO',
+        tooltip: 'Add ToDo',
         child: const Icon(Icons.add),
       ),
     );
