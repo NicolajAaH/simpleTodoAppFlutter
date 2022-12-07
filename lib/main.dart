@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     builder: (_) => AlertDialog(
                           title: const Text('About the ToDo app'),
                           content: const Text(
-                              'It is a simple ToDo app. \nUse the + button to add a ToDo\nSwipe left to delete a ToDo\nDeveloped by: Nicolaj Aalykke Hansen (nicol20)'),
+                              'It is a simple ToDo app. \nUse the + button to add a ToDo\nSwipe left to delete a ToDo\nDeveloped by: \nNicolaj Aalykke Hansen (nicol20)'),
                           actions: <Widget>[
                             TextButton(
                                 onPressed: (() {
